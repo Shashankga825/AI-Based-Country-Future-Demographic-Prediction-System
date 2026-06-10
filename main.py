@@ -8,17 +8,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import warnings
 warnings.filterwarnings('ignore')
-def run():
-    import streamlit as st
-
-    st.write("Inside run function")
-
-    # your code step by step
-    st.write("Loading data...")
-@st.cache_data
-def load_data():
-    import pandas as pd
-    return pd.read_csv("dataset.csv")
 
 from demographic_ml import load_and_preprocess, get_country_data, train_models, predict_for_year, build_projection_timeseries
 
@@ -236,7 +225,26 @@ try:
     selected_year = st.sidebar.slider("Forecast Year", min_value=2025, max_value=2100, value=2050, step=1)
 
     st.sidebar.markdown("---")
-    run_forecast = st.sidebar.button("▶  Generate Forecast", use_container_width=True)
+
+    # ==============================
+    # SESSION STATE — persist forecast across reloads and shared links
+    # ==============================
+    if "run_forecast" not in st.session_state:
+        st.session_state["run_forecast"] = False
+    if "last_country" not in st.session_state:
+        st.session_state["last_country"] = selected_country
+    if "last_year" not in st.session_state:
+        st.session_state["last_year"] = selected_year
+
+    # Reset forecast if user changes country or year
+    if (selected_country != st.session_state["last_country"] or
+            selected_year != st.session_state["last_year"]):
+        st.session_state["run_forecast"] = False
+        st.session_state["last_country"] = selected_country
+        st.session_state["last_year"] = selected_year
+
+    if st.sidebar.button("▶  Generate Forecast", use_container_width=True):
+        st.session_state["run_forecast"] = True
 
     st.sidebar.markdown("---")
     st.sidebar.markdown("<p style='color:#4a6a8a;font-size:11px;'>Models: Ridge · SVR · Random Forest<br>GradientBoosting · AdaBoost · Lasso<br>Auto-selects best per country</p>", unsafe_allow_html=True)
@@ -298,7 +306,7 @@ try:
     # ==============================
     # FORECAST SECTION
     # ==============================
-    if run_forecast:
+    if st.session_state["run_forecast"]:
         with st.spinner(f"Training models for {selected_country}..."):
             models = train_models(country_df)
             result = predict_for_year(country_df, models, selected_year)
