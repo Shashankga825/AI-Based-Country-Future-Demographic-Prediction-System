@@ -8,6 +8,9 @@ import plotly.express as px
 import plotly.graph_objects as go
 import warnings
 warnings.filterwarnings('ignore')
+def run():
+    import streamlit as st
+    st.title("DemoScope")
 
 from demographic_ml import load_and_preprocess, get_country_data, train_models, predict_for_year, build_projection_timeseries
 
