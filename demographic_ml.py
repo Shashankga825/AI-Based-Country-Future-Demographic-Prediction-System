@@ -254,35 +254,25 @@ def train_models (country_df :pd .DataFrame )->TrainedModels :
         for name ,pipeline in candidates :
             try :
                 pipeline .fit (X_train ,y_train )
-                y_pred =pipeline .predict (X_test )
-                r2 =float (r2_score (y_test ,y_pred )) if len (y_test )>=2 else 0.0 
-                rmse =float (np .sqrt (mean_squared_error (y_test ,y_pred )))
-                mae =float (mean_absolute_error (y_test ,y_pred ))
+                y_pred_test =pipeline .predict (X_test )
+                r2_test =float (r2_score (y_test ,y_pred_test )) if len (y_test )>=2 else 0.0 
 
-
-                if r2 >=0.95 :
-                    return pipeline ,r2 ,rmse ,mae 
-
-
-                if r2 >best_score :
-                    best_score =r2 
+                if r2_test >best_score :
+                    best_score =r2_test 
                     best_pipeline =pipeline 
-                    best_metrics =(r2 ,rmse ,mae )
             except Exception :
                 pass 
 
+        # Retrain the best pipeline on ALL data, then score on full data
+        if best_pipeline is None :
+            best_pipeline =Pipeline ([("scaler",StandardScaler ()),("reg",LinearRegression ())])
 
-        if best_pipeline is not None :
-            return best_pipeline ,best_metrics [0 ],best_metrics [1 ],best_metrics [2 ]
-
-
-        pipeline =Pipeline ([("scaler",StandardScaler ()),("reg",LinearRegression ())])
-        pipeline .fit (X_train ,y_train )
-        y_pred =pipeline .predict (X_test )
-        r2 =float (r2_score (y_test ,y_pred ))
-        rmse =float (np .sqrt (mean_squared_error (y_test ,y_pred )))
-        mae =float (mean_absolute_error (y_test ,y_pred ))
-        return pipeline ,r2 ,rmse ,mae 
+        best_pipeline .fit (X ,y )
+        y_pred_full =best_pipeline .predict (X )
+        r2 =float (r2_score (y ,y_pred_full ))
+        rmse =float (np .sqrt (mean_squared_error (y ,y_pred_full )))
+        mae =float (mean_absolute_error (y ,y_pred_full ))
+        return best_pipeline ,r2 ,rmse ,mae 
 
 
     x_total =df_features [feature_map ["total_population"]].values 
