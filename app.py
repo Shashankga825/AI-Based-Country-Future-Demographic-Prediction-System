@@ -1,5 +1,4 @@
 from main import *
-import streamlit as st
+from main import run
 
-st.title("DemoScope")
-st.write("Population Prediction System")
+run()
