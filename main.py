@@ -10,7 +10,11 @@ import warnings
 warnings.filterwarnings('ignore')
 def run():
     import streamlit as st
-    st.title("DemoScope")
+
+    st.write("Inside run function")
+
+    # your code step by step
+    st.write("Loading data...")
 
 from demographic_ml import load_and_preprocess, get_country_data, train_models, predict_for_year, build_projection_timeseries
 
