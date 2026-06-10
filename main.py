@@ -15,6 +15,10 @@ def run():
 
     # your code step by step
     st.write("Loading data...")
+@st.cache_data
+def load_data():
+    import pandas as pd
+    return pd.read_csv("dataset.csv")
 
 from demographic_ml import load_and_preprocess, get_country_data, train_models, predict_for_year, build_projection_timeseries
 
