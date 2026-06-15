@@ -1,7 +1,3 @@
-# ==============================
-# Demographic Prediction System
-# ==============================
-
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
@@ -10,9 +6,6 @@ warnings.filterwarnings('ignore')
 
 from demographic_ml import load_and_preprocess, get_country_data, train_models, predict_for_year, build_projection_timeseries
 
-# ==============================
-# PAGE SETUP
-# ==============================
 st.set_page_config(
     page_title="DemoScope — Population Forecasts",
     layout="wide",
@@ -63,9 +56,7 @@ BLUE  = "#0080ff"
 ORANGE = "#f0b429"
 RED   = "#ff4d6d"
 
-# ==============================
-# HEADER
-# ==============================
+
 col_title, col_sub = st.columns([3, 1])
 with col_title:
     st.markdown("# 🌍 DemoScope")
@@ -73,9 +64,7 @@ with col_title:
 
 st.markdown("---")
 
-# ==============================
-# LOAD DATA
-# ==============================
+
 @st.cache_data
 def load_demographic_data():
     return load_and_preprocess("dataset.csv")
@@ -84,9 +73,7 @@ try:
     df = load_demographic_data()
     countries = sorted(df["Country Name"].unique())
 
-    # ==============================
-    # SIDEBAR
-    # ==============================
+   
     st.sidebar.markdown("## ⚙ Settings")
     st.sidebar.markdown("---")
 
@@ -98,9 +85,7 @@ try:
 
     st.sidebar.markdown("---")
 
-    # ==============================
-    # SESSION STATE — persists across reloads and shared links
-    # ==============================
+ 
     if "run_forecast" not in st.session_state:
         st.session_state["run_forecast"] = False
     if "last_country" not in st.session_state:
@@ -125,9 +110,7 @@ try:
         unsafe_allow_html=True
     )
 
-    # ==============================
-    # HISTORICAL OVERVIEW (always visible)
-    # ==============================
+   
     country_df = get_country_data(df, selected_country)
 
     st.markdown(f"<div class='section-label'>Historical Data — {selected_country}</div>", unsafe_allow_html=True)
@@ -176,9 +159,7 @@ try:
             height=260, legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#7fa8c9")))
         st.plotly_chart(fig_rates, use_container_width=True)
 
-    # ==============================
-    # FORECAST SECTION
-    # ==============================
+ #FORCAST
     if st.session_state["run_forecast"]:
         with st.spinner(f"Training models for {selected_country}..."):
             models     = train_models(country_df)
@@ -276,9 +257,7 @@ try:
                 legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color="#7fa8c9")))
             st.plotly_chart(fig_rates_proj, use_container_width=True)
 
-        # ==============================
-        # MODEL ACCURACY
-        # ==============================
+      
         st.markdown("<div class='section-label'>Model Accuracy</div>", unsafe_allow_html=True)
 
         def score_badge(label, r2):
@@ -364,9 +343,7 @@ except Exception as e:
     st.write(f"Error: {str(e)}")
     st.info("Check that the data file is available")
 
-# ==============================
-# FOOTER
-# ==============================
+
 st.markdown("---")
 st.markdown("""
 <p style='color:#4a6a8a;font-size:11px;text-align:center;'>
